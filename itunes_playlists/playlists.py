@@ -1,6 +1,7 @@
 import plistlib
 import numpy as np
 from matplotlib import pyplot as plt
+import argparse
 
 
 def find_duplicates(file_name):
@@ -14,8 +15,7 @@ def find_duplicates(file_name):
     track_names = {}
     for track_id, track in tracks.items():
         try:
-            name = track['Name']
-            duration = track['Total Time']
+            name, duration = track['Name'], track['Total Time']
             if name in track_names:
                 # if a name and duration match, increment the count
                 # round the track length to the nearest second
@@ -30,9 +30,9 @@ def find_duplicates(file_name):
             pass
     # Store duplicates as (name, count) tuples
     dups = []
-    for k, v in track_names.items():
-        if v[1] > 1:
-            dups.append((v[1], k))
+    for name, info in track_names.items():
+        if info[1] > 1:  # check if count > 1
+            dups.append((name, info[1]))
     # Save duplicates to a file
     dups_len = len(dups)
     if dups_len > 0:
@@ -40,8 +40,8 @@ def find_duplicates(file_name):
     else:
         print("no duplicates found!")
     with open("dups.txt", "w") as f:
-        for val in dups:
-            f.write(f"[{val[0]}] {val[1]}")
+        for track in dups:
+            f.write(f"[{track[0]}] {track[1]}")
 
 
 def find_common_tracks(file_names):
@@ -111,9 +111,33 @@ def plot_stats(file_name):
 
 def main():
     """Analyze playlist files (.xml) exported from iTunes."""
-    find_duplicates('test_files/mymusic.xml')
-    find_common_tracks(['test_files/pl1.xml', 'test_files/pl2.xml'])
-    plot_stats('test_files/mymusic.xml')
+    parser = argparse.ArgumentParser(
+        description="This programm analyzes playlists files(.xml) exported from iTunes.")
+    group = parser.add_mutually_exclusive_group()
+
+    # Add expected arguments
+    group.add_argument('--common', nargs="*", dest='plFiles', required=False)
+    group.add_argument('--stats', dest='plFile', required=False)
+    group.add_argument('--dup', dest='plFileD', required=False)
+
+    # Parse args
+    args = parser.parse_args()
+
+    if args.plFiles:
+        # Find common tracks
+        find_common_tracks(args.plFiles)
+    elif args.plFile:
+        # Plot stats
+        plot_stats(args.plFile)
+    elif args.plFileD:
+        # Find duplicate  tracks
+        find_duplicates(args.plFileD)
+    else:
+        print("These are not the tracks you are looking for.")
+
+    # find_duplicates('test_files/mymusic.xml')
+    # find_common_tracks(['test_files/pl1.xml', 'test_files/pl2.xml'])
+    # plot_stats('test_files/mymusic.xml')
 
 
 if __name__ == '__main__':
