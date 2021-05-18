@@ -9,3 +9,7 @@ and graph the relationship between song ratings and length.
 2. Spirographs.
 The goal in this project is creating an animation of Spirographlike drawing curves.
 The completed drawings must be saved as PNG image files. 
+
+3. Conway's game of life
+
+4. Generating musical overtones with the Karpus-Strong Algorithm
