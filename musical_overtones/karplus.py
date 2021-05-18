@@ -91,6 +91,7 @@ def main():
                         required=False)  # set up plot to show wave
     parser.add_argument('--play', action='store_true', required=False)
     parser.add_argument('--piano', action='store_true', required=False)
+    parser.add_argument('--from-file', dest='from_file', required=False)
 
     args = parser.parse_args()
 
@@ -119,6 +120,15 @@ def main():
         if args.display:
             nplayer.play(f'{name}.wav')
             time.sleep(0.5)
+
+    # Play music from file
+    if args.from_file:
+        with open(args.from_file, 'r') as f:
+            data_from_file = list(f.read().split(" "))
+            data_file = zip(data_from_file[::2], data_from_file[1::2])
+            for data in data_file:
+                nplayer.play(f'{data[0]}.wav')
+                time.sleep(int(data[1]))
 
     # Play random tune
     if args.play:
