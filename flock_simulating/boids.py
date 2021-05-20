@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import argparse
 from numpy.linalg import norm
+from scipy.spatial.kdtree import distance_matrix
 
 width, height = 640, 480
 
@@ -23,12 +24,14 @@ class Boids:
         # Create arra using the random vector method
         self.vel = np.array(list(zip(np.sin(angles), np.cos(angles))))
         self.n = n
+        # Minimum distance of approach
+        self.min_distance = 25.0
         # Maximum magnitude of velocities calculated by rules
         self.max_rule_vel = 0.03
         # Maximum magnitude of the final velocity
         self.max_vel = 2.0
 
-    def apply_bc(self):
+    def _apply_bc(self):
         """Apply boundary conditions"""
         delta = 2.0
         for coord in self.pos:
@@ -41,17 +44,31 @@ class Boids:
             if coord[1] < -delta:
                 coord[1] = height + delta
 
-    def _apply_rules(self):
+    def _apply_rules(self):  # ''!!!!!!!!!111111111
         """Apply the three core rules: Separation, Alignment, Cohesion"""
         # Separation: keep min distance between the boids
-        D = self.dist_matrix() < 25.0
+        D = self.dist_matrix < 25.0
         vel = self.pos*D.sum(axis=1).reshape(self.n, 1) - D.dot(self.pos)
-        self.limit
+        self.limit(vel, self.max_rule_vel)
+
+        # Distance threshold for alignment
+        D = self.dist_matrix < 50.0
+        # Apply rule 2: alignment
+        vel2 = D.dot(self.vel)
+        self.limit(vel2, self.max_rule_vel)
+        vel += vel2
+
+        # Apply rule 3: cohesion
+        vel3 = D.dot(self.pos) - self.pos
+        self.limit(vel3, self.max_rule_vel)
+        vel += vel3
+
+        return vel
 
     def button_press(self, event):
         """Event handler if mouse button is pressed"""
         # Left click to add a boid
-        if event.button is 1:
+        if event.button == 1:
             self.pos = np.concatenate(
                 (self.pos, np.array([[event.xdata, event.ydata]])), axis=0)
             # Generate a random velocity
@@ -60,16 +77,24 @@ class Boids:
             self.vel = np.concatenate((self.vel, vel), axis=0)
             self.n += 1  # increment the count of boids
         # Right click to scatter boids
-        elif event.button is 3:
+        elif event.button == 3:
             # Add scattering velocity
             self.vel += 0.1*(self.pos - np.array([[event.xdata, event.ydata]]))
 
-    def tick(self):
+    def tick(self, frame_num, pts, beak):
         """Update the simulation by one time step."""
         # Get pairwise distance
         self.dist_matrix = squareform(pdist(self.pos))
         # Apply rules
         self.vel += self._apply_rules()
+        self.limit(self.vel, self.max_vel)
+        self.pos += self.vel
+        self._apply_bc()
+        # Update data
+        pts.set_data(self.pos.reshape(2*self.n)
+                     [::2], self.pos.reshape(2*self.n)[1::2])
+        vec = self.pos + 10*self.vel/self.max_vel  # !!!!!
+        beak.set_data(vec.reshape(2*self.n)[::2], vec.reshape(2*self.n)[1::2])
 
     def limit_vec(self, vec, max_val):
         """Limit the magnitude of the 2D vector."""
@@ -95,7 +120,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Implementing Craig Reynolds Bpid...")
-    parser.add_argument('num_boids', dest='n', required=False)
+    parser.add_argument('--num_boids', dest='n', required=False)
     args = parser.parse_args()
 
     # Set the initial number of boids
@@ -111,9 +136,11 @@ def main():
     ax = plt.axes(xlim=(0, width), ylim=(0, height))
 
     # size and shape of the markers for body
-    pts, = ax.plot([], [], markersize=10, c='k', marker='o', ls='None')
+    pts, = ax.plot([], [], markersize=10, c='k', marker='o',
+                   ls='None')  # Create empty 2D Line object
     # size and shape of the markers for beak
-    beak, = ax.plot([], [], markersize=4, c='r', marker='o', ls='None')
+    beak, = ax.plot([], [], markersize=4, c='r', marker='o',
+                    ls='None')  # Create empty 2D Line object
     anim = animation.FuncAnimation(
         fig, tick, fargs=(pts, beak, boids), interval=50)
 
