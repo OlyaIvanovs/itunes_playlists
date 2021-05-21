@@ -30,9 +30,9 @@ print(vel)
 vel = D.sum(axis=1).reshape(n, 1)*pos
 print(vel)
 vel2 = D.dot(pos)
-print(vel2)
-vel = vel - vel2
-print(vel)
+vel3 = D.dot(pos)/D.sum(axis=1).reshape(n, 1) - pos
+print("vel2", vel2)
+print("vel3", vel3)
 
 
 # print(vec)

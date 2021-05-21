@@ -27,9 +27,9 @@ class Boids:
         # Minimum distance of approach
         self.min_distance = 25.0
         # Maximum magnitude of velocities calculated by rules
-        self.max_rule_vel = 0.03
+        self.max_rule_vel = 0.2
         # Maximum magnitude of the final velocity
-        self.max_vel = 2.0
+        self.max_vel = 3.0
 
     def _apply_bc(self):
         """Apply boundary conditions"""
@@ -54,11 +54,13 @@ class Boids:
         # Distance threshold for alignment
         D = self.dist_matrix < 50.0
         # Apply rule 2: alignment
+        # vel2 = D.dot(self.vel)/D.sum(axis=1).reshape(self.n, 1)
         vel2 = D.dot(self.vel)
         self.limit(vel2, self.max_rule_vel)
         vel += vel2
 
         # Apply rule 3: cohesion
+        # vel3 = D.dot(self.pos)/D.sum(axis=1).reshape(self.n, 1) - self.pos
         vel3 = D.dot(self.pos) - self.pos
         self.limit(vel3, self.max_rule_vel)
         vel += vel3
