@@ -13,3 +13,10 @@ The completed drawings must be saved as PNG image files.
 3. Conway's game of life
 
 4. Generating musical overtones with the Karpus-Strong Algorithm
+
+5. Using Reynolds's three rules to create a Boids simulation of the flocking behavior 
+of n birds and plot their positions and directions of movement over time.
+
+6. ASCII art. Using Python to create a program that generates ASCII art from graphical images
+
+7. Photomosaics. Create mosaics using Python.
