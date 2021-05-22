@@ -20,3 +20,5 @@ of n birds and plot their positions and directions of movement over time.
 6. ASCII art. Using Python to create a program that generates ASCII art from graphical images
 
 7. Photomosaics. Create mosaics using Python.
+
+8. Autostereograms. Create an autostereogram from an input depth map image. 

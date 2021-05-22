@@ -177,7 +177,7 @@ def main():
         print("resizing images...")
         # For given grid size,  compute the max width and height of tiles
         tile_dims = (
-            int(target_image.size[0]/grid_size[1]), int(target_image.size[1]/grid_size[1]))
+            int(target_image.size[0]/grid_size[0]), int(target_image.size[1]/grid_size[1]))
         print(f"max tile dims: {tile_dims}")
         # resize
         for img in input_images:
