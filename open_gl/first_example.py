@@ -13,6 +13,8 @@ for writing OpenGL programs. It implements a simple windowing application
 programming interface (API) for OpenGL. GLUT makes it considerably easier 
 to learn about and explore OpenGL Programming."""
 
+# Uniform variables are used to communicate with your vertex or fragment shader from "outside"
+
 str_vector_shader = """
 #version 330 core
 
