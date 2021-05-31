@@ -54,8 +54,7 @@ def update_board(board, space, player_mark):
 
 def is_valid_space(board, space):
     """Return True if the space is valid and it is blank."""
-    if space in ALL_SPACES and board[space] == BLANK:
-        return True
+    return space in ALL_SPACES and board[space] == BLANK:
 
 
 def main():
